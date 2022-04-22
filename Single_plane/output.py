@@ -2,6 +2,7 @@ import shutil
 import os
 import time
 import argparse
+from xml.sax.xmlreader import AttributesNSImpl
 import numpy as np
 from tqdm import tqdm
 import random
@@ -32,7 +33,7 @@ def evaluate(args):
     y_preds = []
     losses = []
     log_every = 20
-    for i, (image, label, weight) in enumerate(test_loader):
+    for i, (image, label, weight, record) in enumerate(test_loader):
 
         if torch.cuda.is_available():
             image = image.cuda()
@@ -42,8 +43,13 @@ def evaluate(args):
         label = label[0]
         weight = weight[0]
 
-        prediction, _ = model.forward(image.float())
+        prediction, attention = model.forward(image.float())
         prediction = prediction.squeeze(0)
+
+        attention_path = './attention/{0}/'.format(args.plane) + record[0] + '.npy'
+        if os.path.exists(attention_path):
+            os.remove(attention_path)
+        np.save(attention_path, attention.detach().cpu().numpy())
 
         loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
 

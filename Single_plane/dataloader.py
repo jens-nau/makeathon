@@ -45,6 +45,7 @@ class Dataset(data.Dataset):
 
     def __getitem__(self, index):
         array = np.load(self.paths[index])
+        record = self.records['id'].tolist()[index]
 
         label = self.labels[index]
         label = torch.FloatTensor([label])
@@ -64,4 +65,7 @@ class Dataset(data.Dataset):
             weight = np.array([self.weights[0]])
             weight = torch.FloatTensor(weight)
 
-        return array, label, weight
+        if self.test:
+            return array, label, weight, record
+        else:
+            return array, label, weight
