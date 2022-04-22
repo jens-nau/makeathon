@@ -1,0 +1,3 @@
+[submodule "ResNet18-Spatial-Attention"]
+	path = ResNet18-Spatial-Attention
+	url = git@github.com:jens-nau/ResNet18-Spatial-Attention.git
