@@ -9,7 +9,6 @@ class Net(nn.Module):
         super().__init__()
         self.pretrained_model = models.resnet18(pretrained=True)
         self.conv = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=1)
-        self.conv_early = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=1)
         self.soft = nn.Softmax(2)
         self.classifer = nn.Linear(1000, 1)
 
@@ -29,23 +28,11 @@ class Net(nn.Module):
         x = torch.squeeze(x, dim=0)
         x = self.pretrained_model.conv1(x)
         x = self.pretrained_model.bn1(x)
-
-        attention_early = self.conv_early(x)
-        attention_early = self.soft(attention_early.view(
-            *attention_early.size()[:2], -1)).view_as(attention_early)
-        maximum_early = torch.max(attention_early.flatten(2), 2).values
-        maximum_early = Net.tile(maximum_early, 1, attention_early.shape[2]*attention_early.shape[3])
-        attention_norm_early = attention_early.flatten(2).flatten(1) / maximum_early
-        attention_norm_early = torch.reshape(
-            attention_norm_early, (attention_early.shape[0], attention_early.shape[1], attention_early.shape[2], attention_early.shape[3]))
-        x = x*attention_norm_early
-
         x = self.pretrained_model.maxpool(x)
         x = self.pretrained_model.layer1(x)
         x = self.pretrained_model.layer2(x)
         x = self.pretrained_model.layer3(x)
         x = self.pretrained_model.layer4(x)
-
         attention = self.conv(x)
         attention = self.soft(attention.view(
             *attention.size()[:2], -1)).view_as(attention)
@@ -60,4 +47,4 @@ class Net(nn.Module):
         output = torch.max(out, 0, keepdim=True)[0]
         output = self.classifer(output)
 
-        return output, attention, attention_early
+        return output, attention

@@ -1,7 +1,7 @@
 # Custom: project-specific
 logs/
-models/
 attention/
+models/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -42,7 +42,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, curre
         label = label[0]
         weight = weight[0]
 
-        prediction, _, _ = model.forward(image.float())
+        prediction, _ = model.forward(image.float())
         prediction = prediction.squeeze(0)
 
         loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
@@ -105,7 +105,7 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, current_lr, log
         label = label[0]
         weight = weight[0]
 
-        prediction, _, _ = model.forward(image.float())
+        prediction, _ = model.forward(image.float())
         prediction = prediction.squeeze(0)
 
         loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
