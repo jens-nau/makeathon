@@ -9,7 +9,10 @@ from torchvision import transforms
 import pdb
 from torch.autograd import Variable
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 class Dataset(data.Dataset):
     def __init__(self, root_dir, task, test=False, transform=None, indexes=None, weights=None):
         super().__init__()
@@ -24,7 +27,11 @@ class Dataset(data.Dataset):
             self.folder_path2 = self.root_dir + 'train/coronal/'
             self.records = pd.read_csv(
                 self.root_dir + 'train-{0}.csv'.format(task), header=None, names=['id', 'label'])
+<<<<<<< HEAD
             self.records = self.records.iloc[indexes, :].reset_index(drop=True)
+=======
+            self.records = self.records.iloc[indexes,:].reset_index(drop=True)
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
         else:
             self.folder_path = self.root_dir + 'valid/sagittal/'
@@ -38,11 +45,20 @@ class Dataset(data.Dataset):
         self.paths = [self.folder_path + filename +
                       '.npy' for filename in self.records['id'].tolist()]
         self.paths1 = [self.folder_path1 + filename +
+<<<<<<< HEAD
                        '.npy' for filename in self.records['id'].tolist()]
         self.paths2 = [self.folder_path2 + filename +
                        '.npy' for filename in self.records['id'].tolist()]
         self.labels = self.records['label'].tolist()
 
+=======
+                      '.npy' for filename in self.records['id'].tolist()]
+        self.paths2 = [self.folder_path2 + filename +
+                      '.npy' for filename in self.records['id'].tolist()]
+        self.labels = self.records['label'].tolist()
+
+
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
         if weights is None:
             pos = np.sum(self.labels)
             neg = len(self.labels) - pos
@@ -72,6 +88,7 @@ class Dataset(data.Dataset):
 
         array = np.stack((array,)*3)
         array = torch.FloatTensor(array)
+<<<<<<< HEAD
         array = array.permute(1, 0, 2, 3)
 
         array_1 = np.stack((array_1,)*3)
@@ -81,6 +98,19 @@ class Dataset(data.Dataset):
         array_2 = np.stack((array_2,)*3)
         array_2 = torch.FloatTensor(array_2)
         array_2 = array_2.permute(1, 0, 2, 3)
+=======
+        array=array.permute(1,0,2,3)
+
+
+        array_1 = np.stack((array_1,)*3)
+        array_1 = torch.FloatTensor(array_1)
+        array_1=array_1.permute(1,0,2,3)
+
+
+        array_2 = np.stack((array_2,)*3)
+        array_2 = torch.FloatTensor(array_2)
+        array_2=array_2.permute(1,0,2,3)
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
         if label.item() == 1:
             weight = np.array([self.weights[1]])
@@ -93,3 +123,7 @@ class Dataset(data.Dataset):
             return array, array_1, array_2, label, weight, record
         else:
             return array, array_1, array_2, label, weight
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf

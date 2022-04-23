@@ -5,13 +5,17 @@ import torch.nn.functional as F
 import random
 import numpy as np
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
         self.pretrained_model1 = models.resnet18(pretrained=True)
         self.pretrained_model2 = models.resnet18(pretrained=True)
         self.pretrained_model3 = models.resnet18(pretrained=True)
+<<<<<<< HEAD
         self.conv1 = nn.Conv2d(
             in_channels=512, out_channels=512, kernel_size=1)
         self.conv2 = nn.Conv2d(
@@ -23,20 +27,40 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(1000, 1)
         self.fc3 = nn.Linear(1000, 1)
         self.finalfc = nn.Linear(3, 1)
+=======
+        self.conv1 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=1)
+        self.conv2 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=1)
+        self.conv3 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=1)
+        self.soft = nn.Softmax(2)
+        self.fc1 = nn.Linear(1000,1)
+        self.fc2 = nn.Linear(1000,1)
+        self.fc3 = nn.Linear(1000,1)
+        self.finalfc =nn.Linear(3,1)
+
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
     def tile(a, dim, n_tile):
         init_dim = a.size(dim)
         repeat_idx = [1] * a.dim()
         repeat_idx[dim] = n_tile
         a = a.repeat(*(repeat_idx))
+<<<<<<< HEAD
         order_index = torch.LongTensor(np.concatenate(
             [init_dim * np.arange(n_tile) + i for i in range(init_dim)]))
+=======
+        order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)]))
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
         if torch.cuda.is_available():
             a = a.cuda()
             order_index = order_index.cuda()
         return torch.index_select(a, dim, order_index)
 
+<<<<<<< HEAD
     def forward(self, x, x1, x2):
+=======
+
+    def forward(self, x,x1,x2):
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
         x = torch.squeeze(x, dim=0)
         x = self.pretrained_model1.conv1(x)
         x = self.pretrained_model1.bn1(x)
@@ -46,6 +70,7 @@ class Net(nn.Module):
         x = self.pretrained_model1.layer3(x)
         x = self.pretrained_model1.layer4(x)
         attention = self.conv1(x)
+<<<<<<< HEAD
         attention = self.soft(attention.view(
             *attention.size()[:2], -1)).view_as(attention)
         maximum = torch.max(attention.flatten(2), 2).values
@@ -58,6 +83,18 @@ class Net(nn.Module):
         out = self.pretrained_model1.fc(out.squeeze(3).squeeze(2))
         output1 = torch.max(out, 0, keepdim=True)[0]
         output1 = self.fc1(output1)
+=======
+        attention =  self.soft(attention.view(*attention.size()[:2], -1)).view_as(attention)
+        maximum = torch.max(attention.flatten(2), 2).values
+        maximum = Net.tile(maximum, 1, attention.shape[2]*attention.shape[3])
+        attention_norm = attention.flatten(2).flatten(1) / maximum
+        attention_norm= torch.reshape(attention_norm, (attention.shape[0],attention.shape[1],attention.shape[2],attention.shape[3]))
+        o1 = x*attention_norm
+        out= self.pretrained_model1.avgpool(o1)
+        out = self.pretrained_model1.fc(out.squeeze(3).squeeze(2))
+        output1 = torch.max(out, 0, keepdim=True)[0]
+        output1= self.fc1(output1)
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
         x1 = torch.squeeze(x1, dim=0)
         x1 = self.pretrained_model2.conv1(x1)
@@ -68,6 +105,7 @@ class Net(nn.Module):
         x1 = self.pretrained_model2.layer3(x1)
         x1 = self.pretrained_model2.layer4(x1)
         attention = self.conv1(x1)
+<<<<<<< HEAD
         attention = self.soft(attention.view(
             *attention.size()[:2], -1)).view_as(attention)
         maximum = torch.max(attention.flatten(2), 2).values
@@ -80,6 +118,18 @@ class Net(nn.Module):
         out = self.pretrained_model2.fc(out.squeeze(3).squeeze(2))
         output2 = torch.max(out, 0, keepdim=True)[0]
         output2 = self.fc2(output2)
+=======
+        attention =  self.soft(attention.view(*attention.size()[:2], -1)).view_as(attention)
+        maximum = torch.max(attention.flatten(2), 2).values
+        maximum = Net.tile(maximum, 1, attention.shape[2]*attention.shape[3])
+        attention_norm = attention.flatten(2).flatten(1) / maximum
+        attention_norm= torch.reshape(attention_norm, (attention.shape[0],attention.shape[1],attention.shape[2],attention.shape[3]))
+        o2 = x1*attention_norm
+        out= self.pretrained_model2.avgpool(o2)
+        out = self.pretrained_model2.fc(out.squeeze(3).squeeze(2))
+        output2 = torch.max(out, 0, keepdim=True)[0]
+        output2= self.fc2(output2)
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
         x2 = torch.squeeze(x2, dim=0)
         x2 = self.pretrained_model3.conv1(x2)
@@ -90,6 +140,7 @@ class Net(nn.Module):
         x2 = self.pretrained_model3.layer3(x2)
         x2 = self.pretrained_model3.layer4(x2)
         attention = self.conv1(x2)
+<<<<<<< HEAD
         attention = self.soft(attention.view(
             *attention.size()[:2], -1)).view_as(attention)
         maximum = torch.max(attention.flatten(2), 2).values
@@ -105,5 +156,20 @@ class Net(nn.Module):
 
         output = torch.cat((output1, output2, output3), dim=0)
         final = self.finalfc(output.permute(1, 0))
+=======
+        attention =  self.soft(attention.view(*attention.size()[:2], -1)).view_as(attention)
+        maximum = torch.max(attention.flatten(2), 2).values
+        maximum = Net.tile(maximum, 1, attention.shape[2]*attention.shape[3])
+        attention_norm = attention.flatten(2).flatten(1) / maximum
+        attention_norm= torch.reshape(attention_norm, (attention.shape[0],attention.shape[1],attention.shape[2],attention.shape[3]))
+        o3 = x2*attention_norm
+        out= self.pretrained_model3.avgpool(o3)
+        out = self.pretrained_model3.fc(out.squeeze(3).squeeze(2))
+        output3 = torch.max(out, 0, keepdim=True)[0]
+        output3= self.fc3(output3)
+
+        output = torch.cat((output1,output2,output3), dim=0)
+        final = self.finalfc(output.permute(1,0))
+>>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
         return final
