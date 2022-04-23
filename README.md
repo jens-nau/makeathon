@@ -16,9 +16,11 @@ To fine-tune our model, we used the MRNet dataset from Stanford (https://stanfor
 ## References
 
 Our model and ideas are mainly based on the following research:
-https://arxiv.org/abs/2108.08136
-https://arxiv.org/abs/2010.01947
-https://arxiv.org/abs/1512.03385
+<ul>
+  <li>https://arxiv.org/abs/2108.08136</li>
+  <li>https://arxiv.org/abs/2010.01947</li>
+  <li>https://arxiv.org/abs/1512.03385</li>
+</ul>
 
 ## Setup
 
