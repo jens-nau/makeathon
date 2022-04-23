@@ -8,18 +8,19 @@ import pandas as pd
 import pdb
 from torch.autograd import Variable
 
+
 class Dataset(data.Dataset):
-    def __init__(self, root_dir, task, plane, test=False, transform=None, indexes=None, weights=None ):
+    def __init__(self, root_dir, task, plane, test=False, transform=None, indexes=None, weights=None):
         super().__init__()
         self.task = task
         self.plane = plane
         self.root_dir = root_dir
-        self.test=test
+        self.test = test
         if self.test == False:
             self.folder_path = self.root_dir + 'train/{0}/'.format(plane)
             self.records = pd.read_csv(
                 self.root_dir + 'train-{0}.csv'.format(task), header=None, names=['id', 'label'])
-            self.records = self.records.iloc[indexes,:].reset_index(drop=True)
+            self.records = self.records.iloc[indexes, :].reset_index(drop=True)
         else:
             self.folder_path = self.root_dir + 'valid/{0}/'.format(plane)
 
@@ -53,7 +54,6 @@ class Dataset(data.Dataset):
         if self.transform:
             array = self.transform(array)
             array = array.numpy()
-
 
         array = np.stack((array,)*3, axis=1)
         array = torch.FloatTensor(array)

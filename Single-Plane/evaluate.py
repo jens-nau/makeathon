@@ -20,7 +20,7 @@ def evaluate(args):
                            args.plane, test=True, transform=None)
     test_loader = torch.utils.data.DataLoader(
         test_dataset, batch_size=1, shuffle=-True, num_workers=2, drop_last=False)
-        
+
     model = torch.load(args.model_directory + args.model_name)
 
     _ = model.eval()

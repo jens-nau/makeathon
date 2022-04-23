@@ -146,28 +146,27 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, current_lr, log
 
     return val_loss_epoch, val_auc_epoch
 
+
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
 
 def run(args):
-    indexes = list(range(0,1130))
+    indexes = list(range(0, 1130))
     random.seed(26)
     random.shuffle(indexes)
     num_folds = 8
     ind = math.floor(len(indexes) / num_folds)
-    for fold in range(0,num_folds):
-        if fold == num_folds -1:
+    for fold in range(0, num_folds):
+        if fold == num_folds - 1:
             valid_ind = indexes[ind*(fold):]
-            train_ind = np.setdiff1d(indexes,valid_ind)
+            train_ind = np.setdiff1d(indexes, valid_ind)
         else:
             valid_ind = indexes[ind*(fold):ind*(fold+1)]
-            train_ind = np.setdiff1d(indexes,valid_ind)
-
+            train_ind = np.setdiff1d(indexes, valid_ind)
 
         log_root_folder = "./logs/{0}/".format(args.task)
-
 
         now = datetime.now()
         logdir = log_root_folder + now.strftime("%Y%m%d-%H%M%S") + "/"
@@ -186,9 +185,7 @@ def run(args):
             RandomFlip(),
         ])
 
-
         net = model.Net()
-
 
         if torch.cuda.is_available():
             net = net.cuda()
@@ -196,7 +193,7 @@ def run(args):
         optimizer = optim.Adam(net.parameters(), lr=args.lr, weight_decay=0.1)
 
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-                optimizer, patience=4, factor=.3, threshold=1e-4, verbose=True)
+            optimizer, patience=4, factor=.3, threshold=1e-4, verbose=True)
 
         best_val_loss = float('inf')
         best_val_auc = float(0)
@@ -207,16 +204,14 @@ def run(args):
 
         t_start_training = time.time()
         train_dataset = Dataset(args.directory, args.task, args.plane,
-                         test= False, transform=augmentor, indexes = train_ind)
+                                test=False, transform=augmentor, indexes=train_ind)
         valid_dataset = Dataset(
-            args.directory, args.task, args.plane, test =False, transform = None, indexes = valid_ind)
+            args.directory, args.task, args.plane, test=False, transform=None, indexes=valid_ind)
 
         train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
         valid_loader = torch.utils.data.DataLoader(
             valid_dataset, batch_size=1, shuffle=-True, num_workers=2, drop_last=False)
-
-
 
         for epoch in range(num_epochs):
             current_lr = get_lr(optimizer)
@@ -243,11 +238,9 @@ def run(args):
                 best_val_auc = val_auc
                 file_name = f'model_fold{fold}_{args.prefix_name}_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
                 for f in os.listdir('./models/'):
-                    if (args.task in f) and (args.prefix_name in f) and (args.plane in f) and ('fold'+str(fold) in f) :
+                    if (args.task in f) and (args.prefix_name in f) and (args.plane in f) and ('fold'+str(fold) in f):
                         os.remove(f'./models/{f}')
                 torch.save(net, f'./models/{file_name}')
-
-
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
@@ -258,7 +251,6 @@ def run(args):
                       format(iteration_change_loss))
                 break
 
-
     t_end_training = time.time()
     print(f'training took {t_end_training - t_start_training} s')
 
@@ -268,8 +260,9 @@ def parse_arguments():
     parser.add_argument('-t', '--task', type=str, required=True,
                         choices=['abnormal', 'acl', 'meniscus'])
     parser.add_argument('--prefix_name', type=str, required=True)
-    parser.add_argument('-p', '--plane', type=str, required = True, default=None)
-    parser.add_argument('-d', '--directory', type=str, required = False, default='/home/Documents/data/')
+    parser.add_argument('-p', '--plane', type=str, required=True, default=None)
+    parser.add_argument('-d', '--directory', type=str,
+                        required=False, default='/home/Documents/data/')
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--patience', type=int, default=10)
@@ -288,6 +281,6 @@ if __name__ == "__main__":
         torch.manual_seed(args.seed)
         torch.cuda.manual_seed(args.seed)
         torch.cuda.manual_seed_all(args.seed)
-        torch.backends.cudnn.deterministic=True
+        torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
     run(args)
