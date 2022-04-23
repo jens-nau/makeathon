@@ -1,5 +1,13 @@
-# makeathon
-Revolutionizing medical imaging.
+# AI Penguins
+TUM.ai Makeathon - April 2022 | NetApp Challenge
+
+## Architecture
+
+## Dataset
+
+## References
+
+## Setup
 
 ## Training
 
