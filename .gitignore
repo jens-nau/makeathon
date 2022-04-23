@@ -2,6 +2,7 @@
 logs/
 models/
 attention/
+attention_128/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

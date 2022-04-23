@@ -11,7 +11,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
-import model
+import mp1
+import mp2
+import mp3
 from torchsample.transforms import RandomRotate, RandomTranslate, RandomFlip, ToTensor, Compose, RandomAffine
 from torchvision import transforms
 import torch.nn.functional as F
@@ -31,19 +33,23 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, curre
     y_preds = []
     y_trues = []
     losses = []
-    for i, (image, label, weight) in enumerate(train_loader):
+    for i, (image, image1, image2, label, weight) in enumerate(train_loader):
         optimizer.zero_grad()
 
         if torch.cuda.is_available():
             image = image.cuda()
+            image1 = image1.cuda()
+            image2 = image2.cuda()
             label = label.cuda()
             weight = weight.cuda()
 
         label = label[0]
         weight = weight[0]
 
-        prediction, _ = model.forward(image.float())
+
+        prediction, _, _, _ = model.forward(image.float(),image1.float(),image2.float())
         prediction = prediction.squeeze(0)
+
 
         loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
         loss.backward()
@@ -95,17 +101,19 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, current_lr, log
     y_trues = []
     y_preds = []
     losses = []
-    for i, (image, label, weight) in enumerate(val_loader):
+    for i, (image, image1, image2, label, weight) in enumerate(val_loader):
 
         if torch.cuda.is_available():
             image = image.cuda()
+            image1 = image1.cuda()
+            image2 = image2.cuda()
             label = label.cuda()
             weight = weight.cuda()
 
         label = label[0]
         weight = weight[0]
 
-        prediction, _ = model.forward(image.float())
+        prediction, _, _, _ = model.forward(image.float(),image1.float(),image2.float())
         prediction = prediction.squeeze(0)
 
         loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
@@ -164,8 +172,6 @@ def run(args):
         else:
             valid_ind = indexes[ind*(fold):ind*(fold+1)]
             train_ind = np.setdiff1d(indexes,valid_ind)
-
-
         log_root_folder = "./logs/{0}/".format(args.task)
 
 
@@ -187,8 +193,12 @@ def run(args):
         ])
 
 
-        net = model.Net()
-
+        if args.mod == 'mp1':
+            net = mp1.Net()
+        elif args.mod == 'mp2':
+            net = mp2.Net()
+        elif args.mod == 'mp3':
+            net = mp3.Net()
 
         if torch.cuda.is_available():
             net = net.cuda()
@@ -206,10 +216,11 @@ def run(args):
         log_every = args.log_every
 
         t_start_training = time.time()
-        train_dataset = Dataset(args.directory, args.task, args.plane,
+
+        train_dataset = Dataset(args.directory, args.task,
                          test= False, transform=augmentor, indexes = train_ind)
         valid_dataset = Dataset(
-            args.directory, args.task, args.plane, test =False, transform = None, indexes = valid_ind)
+            args.directory, args.task, test =False, transform = None, indexes = valid_ind)
 
         train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
@@ -241,9 +252,9 @@ def run(args):
 
             if val_auc > best_val_auc:
                 best_val_auc = val_auc
-                file_name = f'model_fold{fold}_{args.prefix_name}_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
+                file_name = f'model_fold{fold}_{args.prefix_name}_{args.task}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
                 for f in os.listdir('./models/'):
-                    if (args.task in f) and (args.prefix_name in f) and (args.plane in f) and ('fold'+str(fold) in f) :
+                    if (args.task in f) and (args.prefix_name in f) and ('fold'+str(fold) in f) :
                         os.remove(f'./models/{f}')
                 torch.save(net, f'./models/{file_name}')
 
@@ -268,7 +279,8 @@ def parse_arguments():
     parser.add_argument('-t', '--task', type=str, required=True,
                         choices=['abnormal', 'acl', 'meniscus'])
     parser.add_argument('--prefix_name', type=str, required=True)
-    parser.add_argument('-p', '--plane', type=str, required = True, default=None)
+    parser.add_argument('-m', '--mod', type=str, default=True,
+                            choices =[ 'mp1', 'mp2', 'mp3'])
     parser.add_argument('-d', '--directory', type=str, required = False, default='/home/Documents/data/')
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
