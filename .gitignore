@@ -1,11 +1,7 @@
 # Custom: project-specific
 logs/
 attention/
-<<<<<<< HEAD
 models/
-=======
-attention_128/
->>>>>>> 465269e44a99a1697fb91d4c4815629a581887cf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
