@@ -1,6 +1,14 @@
 # MedApp | See more by doing less.
 TUM.ai Makeathon - April 2022 | NetApp Challenge
 
+## Pitch Deck
+
+See [TUMai_AIPenguins_MedApp.pdf](TUMai_AIPenguins_MedApp.pdf)
+
+## Miro
+
+[Miro](https://miro.com/welcomeonboard/bHBtMEdjVGRDOGluTVVqa1BHVG9ucnZuYjJpUEM1ZFFKUWh2UGdlQVBtc1VzRG80OEE0NkQ5Y25iNnVlNUVHRXwzMDc0NDU3MzUyODAwODEzMjU0?share_link_id=784885959645)
+
 ## Screenshots
 
 <img src="/images/Screenshot_1.png"/>
