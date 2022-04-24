@@ -1,6 +1,12 @@
 # MedApp | See more by doing less.
 TUM.ai Makeathon - April 2022 | NetApp Challenge
 
+## Screenshots
+
+<img src="/images/Screenshot_1.png"/>
+<img src="/images/Screenshot_2.png"/>
+<img src="/images/Screenshot_3.png"/>
+
 ## Architecture
 
 Our solution is based on a state-of-the-art image classification and regression approach that leverages spatial attention. This architecture enables both the classification of injuries and anomalies as well as the regression of anatomical features such as the tibial slope. The spatial attention layer not only improves the performance of the model, but also enables the creation of visual heat maps indicating where anomalies were found or, more generally, which parts of the image contributed to the neural network's decision.
