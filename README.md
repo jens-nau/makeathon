@@ -1,4 +1,4 @@
-# AI Penguins
+# MedApp | See more by doing less.
 TUM.ai Makeathon - April 2022 | NetApp Challenge
 
 ## Architecture
