@@ -30,6 +30,10 @@ Our model and ideas are mainly based on the following research:
 
 ## Setup
 
+### Visualization
+
+See [dashboard.ipynb](/visualization/dashboard.ipynb)
+
 ### Installation
 
 ```bash
